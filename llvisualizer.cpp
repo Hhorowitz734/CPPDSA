@@ -103,15 +103,24 @@ class Button{
         std::string text;
 
 
-        Button(){
+        Button(int positionX, int positionY, int width, int height, std::string text): positionX(positionX), positionY(positionY), width(width), height(height), text(text) {
             AllObjects::Buttons.push_back(this);
-        }
+        };
     
     void display(){
         DrawRectangleLines(positionX, positionY, width, height, WHITE);
         DrawText(text.c_str(), positionX + 5, positionY, 25, WHITE);
     }
-    
+
+};
+
+class NewNode : public Button{
+    public:
+        NewNode(int positionX, int positionY, int width, int height): Button(positionX, positionY, width, height, "New Node"){
+            display();
+        };
+
+    //Write a method here to create a new node
 };
 
 //Static member variables of AllObjects
@@ -129,8 +138,7 @@ int main()
     ClearBackground(BLACK);
 
     //Creates buttons for screen
-    Button newnode;
-    newnode.display();
+    NewNode newnode(750, 570, 50, 30);
 
 
     //Node commands

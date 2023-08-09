@@ -10,12 +10,15 @@ class Node;
 
 class LinkedList;
 
+class Button;
+
 class AllObjects{
 
     public:
         //Storage for all objects in use
         static std::vector<LinkedList*> LinkedLists;
         static std::vector<Node*> Nodes;
+        static std::vector<Button*> Buttons;
 };
 
 class LinkedList{
@@ -85,9 +88,36 @@ void LinkedList::printList(){
     }
 }
 
+class Button{
+    public:
+        
+        //Coordinates
+        int positionX;
+        int positionY;
+
+        //Width, height, detection box
+        int width;
+        int height;
+        Rectangle buttonArea = {static_cast<float>(positionX), static_cast<float>(positionY), static_cast<float>(width), static_cast<float>(height)};
+
+        std::string text;
+
+
+        Button(){
+            AllObjects::Buttons.push_back(this);
+        }
+    
+    void display(){
+        DrawRectangleLines(positionX, positionY, width, height, WHITE);
+        DrawText(text.c_str(), positionX + 5, positionY, 25, WHITE);
+    }
+    
+};
+
 //Static member variables of AllObjects
 std::vector<LinkedList*> AllObjects::LinkedLists;
 std::vector<Node*> AllObjects::Nodes;
+std::vector<Button*> AllObjects::Buttons;
 
 int main()
 {
@@ -97,6 +127,10 @@ int main()
     InitWindow(screenWidth, screenHeight, "Linked List Visualizer");
     SetTargetFPS(60);
     ClearBackground(BLACK);
+
+    //Creates buttons for screen
+    Button newnode;
+    newnode.display();
 
 
     //Node commands
@@ -119,6 +153,16 @@ int main()
         for (Node* node : AllObjects::Nodes){
             node->display();
         }
+
+        //Displays all buttons
+        for (Button* button : AllObjects::Buttons){
+            button->display();
+
+            if (CheckCollisionPointRec(GetMousePosition(), button->buttonArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                std::cout << button->text << " button has been pressed.\n\n\n\n\n";
+            }
+        }
+
 
         EndDrawing();
     }

@@ -11,11 +11,12 @@ class Node;
 class LinkedList;
 
 class AllObjects{
-    public:
-        std::vector<LinkedList*> LinkedLists;
-        std::vector<Node*> Nodes;
-};
 
+    public:
+        //Storage for all objects in use
+        static std::vector<LinkedList*> LinkedLists;
+        static std::vector<Node*> Nodes;
+};
 
 class LinkedList{
 
@@ -41,7 +42,9 @@ class Node {
         bool inLinkedList = false; //Keeps track of whether node is in a linked list
         LinkedList* nodeLinkedList = nullptr; //Stores the linked list that the node is a member of 
 
-        Node(int value, int positionX, int positionY): value(value), positionX(positionX), positionY(positionY) {};
+        Node(int value, int positionX, int positionY): value(value), positionX(positionX), positionY(positionY) {
+            AllObjects::Nodes.push_back(this);
+        };
     
     void display(){
         //Displays the node on the screen
@@ -59,6 +62,7 @@ class Node {
         display();
         if (!inLinkedList){
             nodeLinkedList = new LinkedList(this); //Creates a new linked list where this node is the head
+            AllObjects::LinkedLists.push_back(nodeLinkedList);
         } 
         inLinkedList = true;
         next->inLinkedList = true;
@@ -81,9 +85,9 @@ void LinkedList::printList(){
     }
 }
 
-
-
-
+//Static member variables of AllObjects
+std::vector<LinkedList*> AllObjects::LinkedLists;
+std::vector<Node*> AllObjects::Nodes;
 
 int main()
 {
@@ -94,14 +98,14 @@ int main()
     SetTargetFPS(60);
     ClearBackground(BLACK);
 
-    //Node
+
+    //Node commands
     Node test(5, 400, 300);
     Node test2(6, 505, 300);
-    test.attach(&test2);
     Node test3(7, 610, 300);
-    test2.attach(&test3);
-    test.detach();
-    test.nodeLinkedList->printList();
+    Node test4(8, 715, 300);
+    test.attach(&test2);
+    test3.attach(&test4);
 
     // Main game loop
     while (!WindowShouldClose())
@@ -110,9 +114,11 @@ int main()
 
         // Clear the screen
         BeginDrawing();
-        test.display();
-        test2.display();
-        test3.display();
+
+        //Displays all existing nodes
+        for (Node* node : AllObjects::Nodes){
+            node->display();
+        }
 
         EndDrawing();
     }

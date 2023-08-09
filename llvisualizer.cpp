@@ -1,16 +1,30 @@
 #include <stdio.h>
 #include <iostream>
 #include "/opt/homebrew/Cellar/raylib/4.5.0/include/raylib.h"
+#include <vector>
 
 //cd "/Users/bhorowitz/Documents/CPLUSPLUS/DSA/" && g++ llvisualizer.cpp -o llvisualizer -I/opt/homebrew/Cellar/raylib/4.5.0/include -L/opt/homebrew/lib -lraylib -std=c++11 && "/Users/bhorowitz/Documents/CPLUSPLUS/DSA/llvisualizer"
 
+
 class Node;
 
+class LinkedList;
+
+class AllObjects{
+    public:
+        std::vector<LinkedList*> LinkedLists;
+        std::vector<Node*> Nodes;
+};
+
+
 class LinkedList{
+
     public:
         Node* head = nullptr;
 
         LinkedList(Node* head): head(head) {};
+    
+    void printList();
 };
 
 
@@ -42,15 +56,31 @@ class Node {
     void attach(Node* next_node){
         //Attaches a new node as the next node to the current node
         next = next_node;
-        inLinkedList = true;
-        next->inLinkedList = true;
         display();
         if (!inLinkedList){
             nodeLinkedList = new LinkedList(this); //Creates a new linked list where this node is the head
         } 
+        inLinkedList = true;
+        next->inLinkedList = true;
+    }
+
+    void detach(){
+        //Detaches all following nodes from the linked list
+        next->nodeLinkedList = new LinkedList(next); //Creates a new linked list for the next node 
+        next = nullptr;
+        DrawLine(positionX + 35, positionY, positionX + 70, positionY, BLACK);
     }
 
 };
+
+void LinkedList::printList(){
+    Node* curr = head;
+    while (curr){
+        std::cout << curr->value << '\n';
+        curr = curr->next;  // Progress to the next node
+    }
+}
+
 
 
 
@@ -68,7 +98,10 @@ int main()
     Node test(5, 400, 300);
     Node test2(6, 505, 300);
     test.attach(&test2);
-
+    Node test3(7, 610, 300);
+    test2.attach(&test3);
+    test.detach();
+    test.nodeLinkedList->printList();
 
     // Main game loop
     while (!WindowShouldClose())
@@ -79,6 +112,7 @@ int main()
         BeginDrawing();
         test.display();
         test2.display();
+        test3.display();
 
         EndDrawing();
     }

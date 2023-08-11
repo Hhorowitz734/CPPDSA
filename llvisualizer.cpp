@@ -41,10 +41,15 @@ class Node {
         int positionX = 400;
         int positionY = 300;
 
+        int radius = 35;
+
         Node* next = nullptr;
 
         bool inLinkedList = false; //Keeps track of whether node is in a linked list
         LinkedList* nodeLinkedList = nullptr; //Stores the linked list that the node is a member of 
+
+        //Clickbox for a given node
+        Vector2 nodeCenter = { static_cast<float>(positionX), static_cast<float>(positionY) };
 
         Node(int value, int positionX, int positionY): value(value), positionX(positionX), positionY(positionY) {
             AllObjects::Nodes.push_back(this);
@@ -52,11 +57,11 @@ class Node {
     
     void display(){
         //Displays the node on the screen
-        DrawCircleLines(positionX, positionY, 35, WHITE);
+        DrawCircleLines(positionX, positionY, radius, WHITE);
         std::string numStr = std::to_string(value);
         DrawText(numStr.c_str(), positionX - 10, positionY - 10, 25, WHITE);
         if (next){
-            DrawLine(positionX + 35, positionY, positionX + 70, positionY, WHITE);
+            DrawLine(positionX + radius, positionY, positionX + (radius * 2), positionY, WHITE);
         }
     }
 
@@ -189,12 +194,18 @@ int main()
         //Displays all existing nodes
         for (Node* node : AllObjects::Nodes){
             node->display();
+
+            //Executes if a node is pressed
+            if (CheckCollisionPointCircle(GetMousePosition(), node->nodeCenter, static_cast<float>(node->radius)) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                std::cout << "Oh my! Node " << node->value << " was touched!!!\n\n\n\n\n";
+            }
         }
 
         //Displays all buttons
         for (Button* button : AllObjects::Buttons){
             button->display();
 
+            //Executes if a button is pressed
             if (CheckCollisionPointRec(GetMousePosition(), button->buttonArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 std::cout << button->text << " button has been pressed.\n\n\n\n\n";
                 button->buttonAction();

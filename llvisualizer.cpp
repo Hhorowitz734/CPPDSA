@@ -2,6 +2,7 @@
 #include <iostream>
 #include "/opt/homebrew/Cellar/raylib/4.5.0/include/raylib.h"
 #include <vector>
+#include <random>
 
 //cd "/Users/bhorowitz/Documents/CPLUSPLUS/DSA/" && g++ llvisualizer.cpp -o llvisualizer -I/opt/homebrew/Cellar/raylib/4.5.0/include -L/opt/homebrew/lib -lraylib -std=c++11 && "/Users/bhorowitz/Documents/CPLUSPLUS/DSA/llvisualizer"
 
@@ -112,6 +113,11 @@ class Button{
         DrawText(text.c_str(), positionX + 5, positionY, 25, WHITE);
     }
 
+    virtual void buttonAction(){
+        std::cout << "You've clicked on a useless button.\n\n\n\n\n";
+        //If you're getting this, make sure you added "override" to the actual action you're trying to do
+    }
+
 };
 
 class NewNode : public Button{
@@ -119,6 +125,29 @@ class NewNode : public Button{
         NewNode(int positionX, int positionY, int width, int height): Button(positionX, positionY, width, height, "New Node"){
             display();
         };
+
+    void buttonAction() override{
+        //Creates a new node at a random point in the screen
+
+        std::random_device rd;  // obtain a random number from hardware
+        std::mt19937 eng(rd()); // seed the generator
+
+        //Random range for node position in X
+        std::uniform_int_distribution<> distrX(30, 770); 
+        int startingX = distrX(eng);
+
+        //Random range for node position in Y
+        std::uniform_int_distribution<> distrY(30, 570); 
+        int startingY = distrY(eng);
+
+        //Random range for node value
+        std::uniform_int_distribution<> distrValue(1, 99); 
+        int nodeValue = distrValue(eng);
+
+        //Creates the node
+        Node* newNode = new Node(nodeValue, startingX, startingY);
+    }
+
 
     //Write a method here to create a new node
 };
@@ -168,11 +197,13 @@ int main()
 
             if (CheckCollisionPointRec(GetMousePosition(), button->buttonArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 std::cout << button->text << " button has been pressed.\n\n\n\n\n";
+                button->buttonAction();
             }
         }
 
 
         EndDrawing();
+        
     }
 
     // Clean up and exit

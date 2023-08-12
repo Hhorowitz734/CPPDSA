@@ -23,6 +23,11 @@ class AllObjects{
 
         //Stores pointer to the node that had its color set to red last (to ensure only one selected at a time)
         static Node* lastSelectedNode;
+
+        //Stores current "mode" for the visualizer
+        //Current modes include:
+        //1) Attach - Next node that is pressed is attached to the previous node pressed
+        static int mode;
 };
 
 class LinkedList{
@@ -73,7 +78,7 @@ class Node {
         std::string numStr = std::to_string(value);
         DrawText(numStr.c_str(), positionX - 10, positionY - 10, 25, nodeColor);
         if (next){
-            DrawLine(positionX + radius, positionY, positionX + (radius * 2), positionY, WHITE);
+            DrawLine(positionX + radius, positionY, next->positionX - (radius), next->positionY, WHITE);
         }
     }
 
@@ -165,8 +170,20 @@ class NewNode : public Button{
         Node* newNode = new Node(nodeValue, startingX, startingY);
     }
 
+};
 
-    //Write a method here to create a new node
+class AttachNode : public Button{
+    public:
+        AttachNode(int positionX, int positionY, int width, int height): Button(positionX, positionY, width, height, "Attach"){
+            display();
+        };
+    
+    void buttonAction() override{   
+
+        //Sets the mode to attach mode
+        AllObjects::mode = 1;
+
+    }
 };
 
 //Static member variables of AllObjects
@@ -174,6 +191,7 @@ std::vector<LinkedList*> AllObjects::LinkedLists;
 std::vector<Node*> AllObjects::Nodes;
 std::vector<Button*> AllObjects::Buttons;
 Node* AllObjects::lastSelectedNode = nullptr;
+int AllObjects::mode = 0;
 
 
 int main()
@@ -187,15 +205,9 @@ int main()
 
     //Creates buttons for screen
     NewNode newnode(750, 570, 50, 30);
+    AttachNode attachnode(650, 570, 100, 30);
 
-
-    //Node commands
-    Node test(5, 400, 300);
-    Node test2(6, 505, 300);
-    Node test3(7, 610, 300);
-    Node test4(8, 715, 300);
-    test.attach(&test2);
-    test3.attach(&test4);
+    //DO ANY NODE TESTING HERE
 
     // Main game loop
     while (!WindowShouldClose())
@@ -212,11 +224,26 @@ int main()
             //Executes if a node is pressed
             if (CheckCollisionPointCircle(GetMousePosition(), node->nodeCenter, static_cast<float>(node->radius)) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
                 std::cout << "Oh my! Node " << node->value << " was touched!!!\n\n\n\n\n";
-                node->nodeColor = RED;
-                if (AllObjects::lastSelectedNode){
-                    AllObjects::lastSelectedNode->nodeColor = WHITE;
+                
+                //Executes action on node based on "mode" (see AllObjects::mode comments at top)
+                switch(AllObjects::mode){
+                    case 0: //Default case
+                        node->nodeColor = RED;
+                        if (AllObjects::lastSelectedNode){
+                            AllObjects::lastSelectedNode->nodeColor = WHITE;
+                        }
+                        AllObjects::lastSelectedNode = node;
+                        break;
+                    case 1: //Attach case
+                        if (AllObjects::lastSelectedNode){
+                            AllObjects::lastSelectedNode->attach(node);
+                            AllObjects::lastSelectedNode->nodeColor = WHITE;
+                            std::cout << "Node " << AllObjects::lastSelectedNode->value << " has been attached to node " << node->value << ".\n\n\n\n\n";
+                        }
+                        AllObjects::mode = 0;
+                        break;
                 }
-                AllObjects::lastSelectedNode = node;
+
             }
         }
 

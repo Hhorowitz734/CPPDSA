@@ -20,6 +20,9 @@ class AllObjects{
         static std::vector<LinkedList*> LinkedLists;
         static std::vector<Node*> Nodes;
         static std::vector<Button*> Buttons;
+
+        //Stores pointer to the node that had its color set to red last (to ensure only one selected at a time)
+        static Node* lastSelectedNode;
 };
 
 class LinkedList{
@@ -36,20 +39,29 @@ class LinkedList{
 class Node {
     //Defines a class for nodes
     public:
+
+        //Node's value
         int value = 5;
 
+        //Node's coordinates
         int positionX = 400;
         int positionY = 300;
 
+        //Node size
         int radius = 35;
 
+        //Next node
         Node* next = nullptr;
-
+        
+        //Node linked list operations
         bool inLinkedList = false; //Keeps track of whether node is in a linked list
         LinkedList* nodeLinkedList = nullptr; //Stores the linked list that the node is a member of 
 
         //Clickbox for a given node
         Vector2 nodeCenter = { static_cast<float>(positionX), static_cast<float>(positionY) };
+
+        //Node color (for when node is clicked etc)
+        Color nodeColor = WHITE;
 
         Node(int value, int positionX, int positionY): value(value), positionX(positionX), positionY(positionY) {
             AllObjects::Nodes.push_back(this);
@@ -57,9 +69,9 @@ class Node {
     
     void display(){
         //Displays the node on the screen
-        DrawCircleLines(positionX, positionY, radius, WHITE);
+        DrawCircleLines(positionX, positionY, radius, nodeColor);
         std::string numStr = std::to_string(value);
-        DrawText(numStr.c_str(), positionX - 10, positionY - 10, 25, WHITE);
+        DrawText(numStr.c_str(), positionX - 10, positionY - 10, 25, nodeColor);
         if (next){
             DrawLine(positionX + radius, positionY, positionX + (radius * 2), positionY, WHITE);
         }
@@ -161,6 +173,8 @@ class NewNode : public Button{
 std::vector<LinkedList*> AllObjects::LinkedLists;
 std::vector<Node*> AllObjects::Nodes;
 std::vector<Button*> AllObjects::Buttons;
+Node* AllObjects::lastSelectedNode = nullptr;
+
 
 int main()
 {
@@ -198,6 +212,11 @@ int main()
             //Executes if a node is pressed
             if (CheckCollisionPointCircle(GetMousePosition(), node->nodeCenter, static_cast<float>(node->radius)) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
                 std::cout << "Oh my! Node " << node->value << " was touched!!!\n\n\n\n\n";
+                node->nodeColor = RED;
+                if (AllObjects::lastSelectedNode){
+                    AllObjects::lastSelectedNode->nodeColor = WHITE;
+                }
+                AllObjects::lastSelectedNode = node;
             }
         }
 

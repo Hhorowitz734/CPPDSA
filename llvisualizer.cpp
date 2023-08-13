@@ -97,8 +97,8 @@ class Node {
     void detach(){
         //Detaches all following nodes from the linked list
         next->nodeLinkedList = new LinkedList(next); //Creates a new linked list for the next node 
+        DrawLine(positionX + radius, positionY, next->positionX - (radius), next->positionY, BLACK);
         next = nullptr;
-        DrawLine(positionX + 35, positionY, positionX + 70, positionY, BLACK);
     }
 
 };
@@ -186,6 +186,34 @@ class AttachNode : public Button{
     }
 };
 
+class UnlinkNode : public Button{
+    public:
+        UnlinkNode(int positionX, int positionY, int width, int height): Button(positionX, positionY, width, height, "Unlink"){
+            display();
+        };
+    
+    void buttonAction() override{ //THIS CODE HAS A SEGFAULT SOMEWHERE IN THERE
+
+        if (AllObjects::lastSelectedNode->next){
+
+            //Detaches nodes from last selected node
+            AllObjects::lastSelectedNode->detach();
+        
+        }
+        if (AllObjects::lastSelectedNode){
+            std::cout << "Unlinking node " << AllObjects::lastSelectedNode->value << " from the tribe!\n\n\n\n\n";
+
+            //Iterates over all nodes and detaches any that are linked to ours
+            for (Node* node : AllObjects::Nodes){
+                if (node->next == AllObjects::lastSelectedNode){
+                    node->detach();
+                }
+            }
+        }
+    }
+    
+};
+
 //Static member variables of AllObjects
 std::vector<LinkedList*> AllObjects::LinkedLists;
 std::vector<Node*> AllObjects::Nodes;
@@ -206,6 +234,7 @@ int main()
     //Creates buttons for screen
     NewNode newnode(750, 570, 50, 30);
     AttachNode attachnode(650, 570, 100, 30);
+    UnlinkNode unlinknode(550, 570, 100, 30);
 
     //DO ANY NODE TESTING HERE
 
@@ -216,6 +245,7 @@ int main()
 
         // Clear the screen
         BeginDrawing();
+        ClearBackground(BLACK);
 
         //Displays all existing nodes
         for (Node* node : AllObjects::Nodes){
@@ -226,6 +256,7 @@ int main()
                 std::cout << "Oh my! Node " << node->value << " was touched!!!\n\n\n\n\n";
                 
                 //Executes action on node based on "mode" (see AllObjects::mode comments at top)
+                std::cout << AllObjects::mode << "\n\n\n\n\n\n";
                 switch(AllObjects::mode){
                     case 0: //Default case
                         node->nodeColor = RED;

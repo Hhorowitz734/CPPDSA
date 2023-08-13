@@ -292,6 +292,20 @@ class OrganizeLists : public Button{
     }
 };
 
+class ClearAll : public Button {
+    public:
+        ClearAll(int positionX, int positionY, int width, int height): Button(positionX, positionY, width, height, "Clear"){
+            display();
+        };
+    
+    void buttonAction() override {
+        //use vec.clear() method to clear the vectors in AllObjects 
+        AllObjects::LinkedLists.clear();
+        AllObjects::Nodes.clear();
+        AllObjects::mode = 0;
+    }
+};
+
 //Static member variables of AllObjects
 std::vector<LinkedList*> AllObjects::LinkedLists;
 std::vector<Node*> AllObjects::Nodes;
@@ -315,6 +329,7 @@ int main()
     UnlinkNode unlinknode(550, 570, 100, 30);
     ColorLists colorlists(400, 570, 150, 30);
     OrganizeLists organizelists(280, 570, 120, 30);
+    ClearAll clearall(200, 570, 80, 30);
 
     //DO ANY NODE TESTING HERE
 

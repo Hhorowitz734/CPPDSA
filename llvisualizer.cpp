@@ -262,6 +262,36 @@ class ColorLists : public Button{
     }
 };
 
+class OrganizeLists : public Button{
+    public:
+        OrganizeLists(int positionX, int positionY, int width, int height): Button(positionX, positionY, width, height, "Organize"){
+            display();
+        };
+    
+    void buttonAction() override {
+
+        int currentHeight = 60;
+
+        for (LinkedList* linkedlist : AllObjects::LinkedLists){
+            
+
+            Node* curr = linkedlist->head;
+            int currentXpos = 60;
+
+
+            while (curr){
+                curr->positionY = currentHeight;
+                curr->positionX = currentXpos;
+                currentXpos += 120;
+                curr = curr->next;
+            }
+
+            currentHeight += 100;
+        }
+
+    }
+};
+
 //Static member variables of AllObjects
 std::vector<LinkedList*> AllObjects::LinkedLists;
 std::vector<Node*> AllObjects::Nodes;
@@ -284,6 +314,7 @@ int main()
     AttachNode attachnode(650, 570, 100, 30);
     UnlinkNode unlinknode(550, 570, 100, 30);
     ColorLists colorlists(400, 570, 150, 30);
+    OrganizeLists organizelists(280, 570, 120, 30);
 
     //DO ANY NODE TESTING HERE
 

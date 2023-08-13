@@ -37,6 +37,8 @@ class LinkedList{
 
         LinkedList(Node* head): head(head) {};
     
+
+    void colorList(Color listcolor);
     void printList();
 };
 
@@ -102,6 +104,18 @@ class Node {
     }
 
 };
+
+
+void LinkedList::colorList(Color listcolor){
+    //Colors all nodes in a linked list to a specific color
+    Node* curr = head;
+
+    while (curr){
+        curr->nodeColor = listcolor;
+        curr = curr->next;
+    }
+
+}
 
 void LinkedList::printList(){
     Node* curr = head;
@@ -200,6 +214,7 @@ class UnlinkNode : public Button{
             AllObjects::lastSelectedNode->detach();
         
         }
+
         if (AllObjects::lastSelectedNode){
             std::cout << "Unlinking node " << AllObjects::lastSelectedNode->value << " from the tribe!\n\n\n\n\n";
 
@@ -210,8 +225,41 @@ class UnlinkNode : public Button{
                 }
             }
         }
+
     }
     
+};
+
+class ColorLists : public Button{
+
+    public:
+        ColorLists(int positionX, int positionY, int width, int height): Button(positionX, positionY, width, height, "Color Lists"){
+            display();
+        };
+    
+    void buttonAction() override {
+        
+        for (LinkedList* linkedlist : AllObjects::LinkedLists){
+
+            //Creates a random number generator
+            std::random_device rd;  // obtain a random number from hardware
+            std::mt19937 eng(rd()); // seed the generator
+
+            //Generates random numbers for a color
+            std::uniform_int_distribution<> distrR(0, 255); 
+            int colorR = distrR(eng);
+            std::uniform_int_distribution<> distrG(0, 255); 
+            int colorG = distrG(eng);
+            std::uniform_int_distribution<> distrB(0, 255); 
+            int colorB = distrB(eng);
+
+            Color customListColor = {static_cast<unsigned char>(colorR), static_cast<unsigned char>(colorG), static_cast<unsigned char>(colorB), 255};
+
+
+            linkedlist->colorList(customListColor);
+
+        }
+    }
 };
 
 //Static member variables of AllObjects
@@ -235,6 +283,7 @@ int main()
     NewNode newnode(750, 570, 50, 30);
     AttachNode attachnode(650, 570, 100, 30);
     UnlinkNode unlinknode(550, 570, 100, 30);
+    ColorLists colorlists(400, 570, 150, 30);
 
     //DO ANY NODE TESTING HERE
 
@@ -256,7 +305,6 @@ int main()
                 std::cout << "Oh my! Node " << node->value << " was touched!!!\n\n\n\n\n";
                 
                 //Executes action on node based on "mode" (see AllObjects::mode comments at top)
-                std::cout << AllObjects::mode << "\n\n\n\n\n\n";
                 switch(AllObjects::mode){
                     case 0: //Default case
                         node->nodeColor = RED;
